@@ -87,9 +87,15 @@ export function UploadZone({ onTasksExtracted }: UploadZoneProps) {
       const formData = new FormData();
       files.forEach((f) => formData.append("files", f));
 
-      const extractedTasks = await analyzeSyllabus(formData);
-      onTasksExtracted(extractedTasks);
-      toast.success(`${extractedTasks.length} tasks extracted!`);
+      const result = await analyzeSyllabus(formData);
+      
+      if (!result.success) {
+        toast.error(result.error || "Failed to extract tasks. Please try again.");
+        return;
+      }
+
+      onTasksExtracted(result.data);
+      toast.success(`${result.data.length} tasks extracted!`);
       setFiles([]);
     } catch (error) {
       toast.error("Failed to analyze. Please try again.");

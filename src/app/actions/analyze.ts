@@ -11,7 +11,8 @@ const groq = createGroq({
 });
 
 // Use generateText + manual JSON parse to avoid json_schema compatibility issues
-export async function analyzeSyllabus(formData: FormData): Promise<Task[]> {
+export async function analyzeSyllabus(formData: FormData): Promise<{ success: true; data: Task[] } | { success: false; error: string }> {
+  try {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -158,17 +159,24 @@ The JSON must follow this exact structure:
       throw new Error("Failed to save tasks to database.");
     }
 
-    return insertedTasks.map((t: any) => ({
-      id: t.id,
-      user_id: t.user_id,
-      course_id: t.course_id || "",
-      task_title: t.task_title,
-      description: t.description,
-      due_date: t.due_date,
-      status: t.status as Task["status"],
-      task_type: t.task_type as Task["task_type"],
-    }));
+    return {
+      success: true,
+      data: insertedTasks.map((t: any) => ({
+        id: t.id,
+        user_id: t.user_id,
+        course_id: t.course_id || "",
+        task_title: t.task_title,
+        description: t.description,
+        due_date: t.due_date,
+        status: t.status as Task["status"],
+        task_type: t.task_type as Task["task_type"],
+      }))
+    };
   }
 
-  return [];
+  return { success: true, data: [] };
+  } catch (err: any) {
+    console.error("analyzeSyllabus error:", err);
+    return { success: false, error: err.message || "An unknown error occurred on the server." };
+  }
 }
