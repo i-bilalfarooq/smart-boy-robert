@@ -21,7 +21,7 @@ export function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-slate-200">
-        <form action={logout}>
+        <form action={async () => { await logout(); }}>
           <button type="submit" className="flex w-full items-center gap-3 px-4 py-3 text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-xl font-medium transition-colors">
             <LogOut size={20} /> Log Out
           </button>
