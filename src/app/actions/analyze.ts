@@ -4,7 +4,6 @@ import { Task } from "@/types";
 import { generateText } from "ai";
 import { createGroq } from "@ai-sdk/groq";
 import { createClient } from "@/lib/supabase/server";
-import * as pdfParse from "pdf-parse";
 import mammoth from "mammoth";
 
 const groq = createGroq({
@@ -34,7 +33,10 @@ export async function analyzeSyllabus(formData: FormData): Promise<Task[]> {
     const buffer = Buffer.from(arrayBuffer);
 
     if (file.type === "application/pdf") {
-      const parseFn = (pdfParse as any).default ?? pdfParse;
+      // Dynamic require bypasses ESM/CJS compatibility issues on Vercel
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const pdfParse = require("pdf-parse");
+      const parseFn = pdfParse.default ?? pdfParse;
       const data = await parseFn(buffer);
       combinedText += `\n\n--- File: ${file.name} ---\n${data.text}`;
     } else if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
