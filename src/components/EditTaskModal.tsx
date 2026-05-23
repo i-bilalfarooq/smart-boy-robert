@@ -85,7 +85,7 @@ export function EditTaskModal({ task, isOpen, onClose, onSave }: EditTaskModalPr
               <label className="block text-sm font-medium text-slate-700 mb-1">Type</label>
               <select 
                 value={taskType}
-                onChange={(e) => setTaskType(e.target.value)}
+                onChange={(e) => setTaskType(e.target.value as Task["task_type"])}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm bg-white text-slate-900"
               >
                 <option value="Assignment">Assignment</option>
